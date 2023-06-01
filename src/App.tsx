@@ -1,32 +1,22 @@
-import React from "react";
-import logo from "./logo.svg";
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import LandingPage from './LandingPage';
+import ClientSection from './client/ClientSection';
+import AdminSection from './admin/AdminSection';
+import ClientSignup from './client/signup'
 import "./App.css";
 
-function LandingPage() {
-  const buttonStyle = {
-    marginRight: "10px",
-    padding: '10px 20px',
-    fontSize: '16px',
-  };
-
+function App() {
   return (
-    <div className="App">
-      <h1 style={{ fontFamily: "Arial", fontSize: "32px" }}>
-        Welcome to GST e-filing!
-      </h1>
-      <p style={{ fontFamily: "Verdana", fontSize: "18px" }}>
-        File your GST returns online with ease.
-      </p>
-      <p style={{ fontFamily: "Verdana", fontSize: "18px" }}>
-        Stay compliant and save time by using our platform.
-      </p>
-      <p style={{ fontFamily: "Verdana", fontSize: "18px" }}>
-        Get started today!
-      </p>
-      <button style={buttonStyle}>Client</button>
-      <button style={buttonStyle}>Admin</button>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/ClientSection" element={<ClientSection />} />
+        <Route path="/AdminSection" element={<AdminSection />} />
+        <Route path="/ClientSection/signup" element={<ClientSignup />} />
+      </Routes>
+    </Router>
   );
 }
 
-export default LandingPage;
+export default App;
