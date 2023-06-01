@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
 import { auth } from '../firebaseConfig'; // Adjust the import path accordingly
 
-function SignUpForm() {
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('client'); // Initialize with 'client'
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,26 +18,30 @@ function SignUpForm() {
     }
 
     try {
-      // Sign up the user using Firebase authentication
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      // User registration successful
-      console.log('User registered:', userCredential.user);
+      // Sign in the user using Firebase authentication
+      const userCredential: UserCredential = await signInWithEmailAndPassword(auth, email, password);
+      // User login successful
+      console.log('User logged in:', userCredential.user);
+      // Print "Success" when authentication is verified
+      if (userCredential.user) {
+        setSuccessMessage('Success');
+      }
     } catch (error) {
-      // Error occurred during registration
-      console.error('Registration error:', error);
-      setError('Failed to register user');
+      // Error occurred during login
+      console.error('Login error:', error);
+      setError('Failed to login');
     }
 
     // Clear form inputs and error message
     setEmail('');
     setPassword('');
-    setError('');
   };
 
   return (
     <form onSubmit={handleSubmit} style={formStyle}>
-      <h2>Sign Up</h2>
+      <h2>Login</h2>
       {error && <p style={errorStyle}>{error}</p>}
+      {successMessage && <p style={successStyle}>{successMessage}</p>}
       <div style={inputContainerStyle}>
         <label htmlFor="email" style={labelStyle}>Email:</label>
         <input
@@ -58,30 +62,7 @@ function SignUpForm() {
           style={inputStyle}
         />
       </div>
-      <div style={inputContainerStyle}>
-        <label style={labelStyle}>Role:</label>
-        <div>
-          <label>
-            <input
-              type="radio"
-              value="client"
-              checked={role === 'client'}
-              onChange={() => setRole('client')}
-            />
-            Client
-          </label>
-          <label>
-            <input
-              type="radio"
-              value="admin"
-              checked={role === 'admin'}
-              onChange={() => setRole('admin')}
-            />
-            Admin
-          </label>
-        </div>
-      </div>
-      <button type="submit" style={buttonStyle}>Sign Up</button>
+      <button type="submit" style={buttonStyle}>Login</button>
     </form>
   );
 }
@@ -129,4 +110,9 @@ const errorStyle: React.CSSProperties = {
   marginBottom: '10px',
 };
 
-export default SignUpForm;
+const successStyle: React.CSSProperties = {
+  color: 'green',
+  marginBottom: '10px',
+};
+
+export default LoginForm;

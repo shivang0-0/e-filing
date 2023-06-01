@@ -31,7 +31,7 @@ function ClientSection() {
           <Link to="./signup">
             <button style={buttonStyle}>Sign Up</button>
           </Link>
-          <Link to="/login">
+          <Link to="./login">
             <button style={buttonStyle}>Login</button>
           </Link>
         </div>
