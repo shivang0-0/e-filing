@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebaseConfig'; // Adjust the import path accordingly
+import { auth, firestore } from '../firebaseConfig'; // Adjust the import path accordingly
+import { collection, doc, setDoc } from 'firebase/firestore';
 
 function SignUpForm() {
   const [email, setEmail] = useState('');
@@ -20,8 +21,16 @@ function SignUpForm() {
     try {
       // Sign up the user using Firebase authentication
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+      // Store additional user information in Firestore
+      const user = userCredential.user;
+      await setDoc(doc(collection(firestore, 'users'), user.uid), {
+        email: user.email,
+        role: role,
+      });
+
       // User registration successful
-      console.log('User registered:', userCredential.user);
+      console.log('User registered:', user);
     } catch (error) {
       // Error occurred during registration
       console.error('Registration error:', error);
