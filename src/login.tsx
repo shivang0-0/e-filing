@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -7,6 +8,7 @@ function LoginForm() {
   const [role, setRole] = useState('client');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +34,9 @@ function LoginForm() {
 
         // Store the JWT token in local storage for future use
         localStorage.setItem('token', token);
+
+        // Redirect to the WelcomePage
+        navigate('/welcome');
       } else {
         setError(response.data.message);
       }

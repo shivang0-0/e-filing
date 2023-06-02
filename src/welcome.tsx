@@ -1,11 +1,9 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import firebase from 'firebase/app';
-import 'firebase/storage';
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import app from './firebaseConfig'; // Import your firebaseConfig
 import axios from 'axios';
 
-// Initialize Firebase
-firebase.initializeApp(app);
 
 function WelcomePage(): JSX.Element {
   const [file, setFile] = useState<File | null>(null);
@@ -18,7 +16,7 @@ function WelcomePage(): JSX.Element {
   };
 
   const handleFileUpload = async (file: File, token: string): Promise<void> => {
-    const storageRef = firebase.storage().ref();
+    const storage = getStorage(app);
 
     try {
       // Generate a unique filename using a timestamp or any other desired method
@@ -30,8 +28,9 @@ function WelcomePage(): JSX.Element {
       };
 
       // Upload the file to Firebase Storage
-      const fileRef = storageRef.child(filename);
-      await fileRef.put(file, { customMetadata: { jwtAuthorization: token }, headers });
+      const storageRef = ref(storage);
+      const fileRef = ref(storageRef, filename);
+      await uploadBytes(fileRef, file, { customMetadata: { jwtAuthorization: token }, contentType: file.type, cacheControl: 'public, max-age=31536000', contentDisposition: `attachment; filename="${file.name}"`, contentEncoding: 'gzip', contentLanguage: 'en' });
 
       // File upload successful
       console.log('File uploaded:', filename);
@@ -72,7 +71,7 @@ function WelcomePage(): JSX.Element {
 
   return (
     <div>
-      <h2>Welcome to the App</h2>
+      <h2>Welcome to Client Section</h2>
       <form onSubmit={handleSubmit}>
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
