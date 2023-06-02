@@ -23,11 +23,11 @@ function LandingPage() {
       <p style={{ fontFamily: "Verdana", fontSize: "18px" }}>
         Get started today!
       </p>
-      <Link to="/ClientSection">
-        <button style={buttonStyle}>Client</button>
+      <Link to="/login">
+        <button style={buttonStyle}>Login</button>
       </Link>
-      <Link to="/AdminSection">
-        <button style={buttonStyle}>Admin</button>
+      <Link to="/signup">
+        <button style={buttonStyle}>Signup</button>
       </Link>
     </div>
   );

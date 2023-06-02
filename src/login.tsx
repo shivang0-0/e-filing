@@ -1,52 +1,61 @@
 import React, { useState } from 'react';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth, firestore } from '../firebaseConfig'; // Adjust the import path accordingly
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
+import { auth, firestore } from './firebaseConfig';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
-function SignUpForm() {
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('client'); // Initialize with 'client'
+  const [role, setRole] = useState('client');
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic form validation
     if (!email || !password) {
       setError('Please fill in all fields');
       return;
     }
 
     try {
-      // Sign up the user using Firebase authentication
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
-      // Store additional user information in Firestore
+      const userCredential: UserCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      await setDoc(doc(collection(firestore, 'users'), user.uid), {
-        email: user.email,
-        role: role,
-      });
 
-      // User registration successful
-      console.log('User registered:', user);
+      const userCollection = collection(firestore, 'users');
+      const q = query(userCollection, where('email', '==', email));
+      const userDocs = await getDocs(q);
+
+      if (userDocs.empty) {
+        setError('Invalid credentials');
+        return;
+      }
+
+      const userData = userDocs.docs[0].data();
+
+      if (userData.role !== role) {
+        setError('Invalid role');
+        setEmail('');
+        setPassword('');
+        return;
+      }
+
+      console.log('User logged in:', user);
+      setSuccessMessage('Success');
     } catch (error) {
-      // Error occurred during registration
-      console.error('Registration error:', error);
-      setError('Failed to register user');
+      console.error('Login error:', error);
+      setError('Failed to login');
     }
 
-    // Clear form inputs and error message
     setEmail('');
     setPassword('');
-    setError('');
   };
 
   return (
     <form onSubmit={handleSubmit} style={formStyle}>
-      <h2>Sign Up</h2>
+      <h2>Login</h2>
       {error && <p style={errorStyle}>{error}</p>}
+      {successMessage && <p style={successStyle}>{successMessage}</p>}
       <div style={inputContainerStyle}>
         <label htmlFor="email" style={labelStyle}>Email:</label>
         <input
@@ -90,7 +99,7 @@ function SignUpForm() {
           </label>
         </div>
       </div>
-      <button type="submit" style={buttonStyle}>Sign Up</button>
+      <button type="submit" style={buttonStyle}>Login</button>
     </form>
   );
 }
@@ -138,4 +147,9 @@ const errorStyle: React.CSSProperties = {
   marginBottom: '10px',
 };
 
-export default SignUpForm;
+const successStyle: React.CSSProperties = {
+  color: 'green',
+  marginBottom: '10px',
+};
+
+export default LoginForm;

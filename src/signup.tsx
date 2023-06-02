@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
-import { auth } from '../firebaseConfig'; // Adjust the import path accordingly
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, firestore } from './firebaseConfig'; // Adjust the import path accordingly
+import { collection, doc, setDoc } from 'firebase/firestore';
 
-function LoginForm() {
+function SignUpForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('client'); // Initialize with 'client'
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,30 +19,34 @@ function LoginForm() {
     }
 
     try {
-      // Sign in the user using Firebase authentication
-      const userCredential: UserCredential = await signInWithEmailAndPassword(auth, email, password);
-      // User login successful
-      console.log('User logged in:', userCredential.user);
-      // Print "Success" when authentication is verified
-      if (userCredential.user) {
-        setSuccessMessage('Success');
-      }
+      // Sign up the user using Firebase authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+      // Store additional user information in Firestore
+      const user = userCredential.user;
+      await setDoc(doc(collection(firestore, 'users'), user.uid), {
+        email: user.email,
+        role: role,
+      });
+
+      // User registration successful
+      console.log('User registered:', user);
     } catch (error) {
-      // Error occurred during login
-      console.error('Login error:', error);
-      setError('Failed to login');
+      // Error occurred during registration
+      console.error('Registration error:', error);
+      setError('Failed to register user');
     }
 
     // Clear form inputs and error message
     setEmail('');
     setPassword('');
+    setError('');
   };
 
   return (
     <form onSubmit={handleSubmit} style={formStyle}>
-      <h2>Login</h2>
+      <h2>Sign Up</h2>
       {error && <p style={errorStyle}>{error}</p>}
-      {successMessage && <p style={successStyle}>{successMessage}</p>}
       <div style={inputContainerStyle}>
         <label htmlFor="email" style={labelStyle}>Email:</label>
         <input
@@ -62,7 +67,30 @@ function LoginForm() {
           style={inputStyle}
         />
       </div>
-      <button type="submit" style={buttonStyle}>Login</button>
+      <div style={inputContainerStyle}>
+        <label style={labelStyle}>Role:</label>
+        <div>
+          <label>
+            <input
+              type="radio"
+              value="client"
+              checked={role === 'client'}
+              onChange={() => setRole('client')}
+            />
+            Client
+          </label>
+          <label>
+            <input
+              type="radio"
+              value="admin"
+              checked={role === 'admin'}
+              onChange={() => setRole('admin')}
+            />
+            Admin
+          </label>
+        </div>
+      </div>
+      <button type="submit" style={buttonStyle}>Sign Up</button>
     </form>
   );
 }
@@ -110,9 +138,4 @@ const errorStyle: React.CSSProperties = {
   marginBottom: '10px',
 };
 
-const successStyle: React.CSSProperties = {
-  color: 'green',
-  marginBottom: '10px',
-};
-
-export default LoginForm;
+export default SignUpForm;
