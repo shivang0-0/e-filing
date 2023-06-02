@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword, UserCredential } from 'firebase/auth';
-import { auth, firestore } from './firebaseConfig';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import axios from 'axios';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -19,29 +17,18 @@ function LoginForm() {
     }
 
     try {
-      const userCredential: UserCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      const response = await axios.post('http://localhost:3001/api/login', {
+        email,
+        password,
+        role,
+      });
 
-      const userCollection = collection(firestore, 'users');
-      const q = query(userCollection, where('email', '==', email));
-      const userDocs = await getDocs(q);
-
-      if (userDocs.empty) {
-        setError('Invalid credentials');
-        return;
+      if (response.data.success) {
+        console.log('User logged in:', response.data.user);
+        setSuccessMessage('Success');
+      } else {
+        setError(response.data.message);
       }
-
-      const userData = userDocs.docs[0].data();
-
-      if (userData.role !== role) {
-        setError('Invalid role');
-        setEmail('');
-        setPassword('');
-        return;
-      }
-
-      console.log('User logged in:', user);
-      setSuccessMessage('Success');
     } catch (error) {
       console.error('Login error:', error);
       setError('Failed to login');
