@@ -26,6 +26,12 @@ function LoginForm() {
       if (response.data.success) {
         console.log('User logged in:', response.data.user);
         setSuccessMessage('Success');
+
+        // Get the JWT token from the response
+        const token = response.data.token;
+
+        // Store the JWT token in local storage for future use
+        localStorage.setItem('token', token);
       } else {
         setError(response.data.message);
       }

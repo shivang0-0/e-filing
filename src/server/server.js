@@ -5,6 +5,7 @@ const db = require('./db'); // Import the database connection
 const User = require('./user'); // Import the User model
 
 const app = express();
+const jwt = require('jsonwebtoken');
 
 app.use(cors());
 app.use(express.json());
@@ -24,6 +25,12 @@ app.post('/api/register', async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: 'User already exists' });
+    }
+
+    // Check password strength
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ error: 'Password should be at least 8 characters long and contain at least one digit, one lowercase letter, and one uppercase letter' });
     }
 
     // Hash the password
@@ -50,7 +57,7 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// login user
+// Login user
 app.post('/api/login', async (req, res) => {
   try {
     const { email, password, role } = req.body;
@@ -78,8 +85,12 @@ app.post('/api/login', async (req, res) => {
       return res.status(400).json({ error: 'Invalid role' });
     }
 
+    // Generate JWT token
+    const token = jwt.sign({ email, role }, 'secretKey', { expiresIn: '1h' });
+    console.log(token);
+
     // Login successful
-    res.json({ success: true, user: { email: user.email, role: user.role } });
+    res.json({ success: true, user: { email: user.email, role: user.role }, token });
   } catch (error) {
     console.error('Login error:', error);
     if (error.response) {
@@ -90,6 +101,30 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ error: 'Failed to login' });
   }
 });
+
+// Generate and return JWT token
+app.get('/api/getToken', (req, res) => {
+  try {
+    // Retrieve the user's email and role from the request headers or body, as per your implementation
+    const { email, role } = req.headers;
+
+    // Basic validation
+    if (!email || !role) {
+      return res.status(400).json({ error: 'Please provide email and role' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign({ email, role }, 'secretKey', { expiresIn: '1h' });
+    console.log('Token:', token);
+
+    // Return the token in the response
+    res.json({ token });
+  } catch (error) {
+    console.error('Token generation error:', error);
+    res.status(500).json({ error: 'Failed to generate token' });
+  }
+});
+
 
 const PORT = 3001;
 app.listen(PORT, () => {

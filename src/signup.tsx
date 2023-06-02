@@ -28,6 +28,12 @@ function SignUpForm() {
       // User registration successful
       console.log('User registered:', response.data);
       setSuccessMessage('Registration successful');
+
+      // Get the JWT token from the response
+      const token = response.data.token;
+
+      // Store the JWT token in local storage for future use
+      localStorage.setItem('token', token);
     } catch (error) {
       // Error occurred during registration
       console.error('Registration error:', error);
