@@ -27,12 +27,6 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ error: 'User already exists' });
     }
 
-    // Check password strength
-    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
-    if (!passwordRegex.test(password)) {
-      return res.status(400).json({ error: 'Password should be at least 8 characters long and contain at least one digit, one lowercase letter, and one uppercase letter' });
-    }
-
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log('Hashed password:', hashedPassword);

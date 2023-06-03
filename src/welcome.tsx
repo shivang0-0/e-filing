@@ -1,7 +1,6 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
-import firebase from 'firebase/app';
+import { useState, ChangeEvent, FormEvent } from 'react';
 import { getStorage, ref, uploadBytes } from 'firebase/storage';
-import app from './firebaseConfig'; // Import your firebaseConfig
+import app from './firebaseConfig';
 import axios from 'axios';
 
 
@@ -21,11 +20,6 @@ function WelcomePage(): JSX.Element {
     try {
       // Generate a unique filename using a timestamp or any other desired method
       const filename = `${Date.now()}_${file.name}`;
-
-      // Set the request headers with the JWT token
-      const headers = {
-        Authorization: `Bearer ${token}`,
-      };
 
       // Upload the file to Firebase Storage
       const storageRef = ref(storage);
