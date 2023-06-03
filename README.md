@@ -1,6 +1,71 @@
-# Getting Started with Create React App
+# Project Documentation
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This README provides an overview of the project and its components.
+
+## React Application Entry Point
+
+- Sets up the routing for different pages of the application using React Router.
+- Renders a `Router` component from the `react-router-dom` library.
+- Defines routes for different paths using the `Route` component.
+- Renders the `LandingPage`, `Signup`, `Login`, and `Welcome` components for their respective routes.
+- Imports a CSS file for styling.
+
+## Express.js Server Setup
+
+- Sets up a server using Express.js.
+- Imports the required dependencies: `express`, `cors`, `bcrypt`, `db`, and `User` modules.
+- Uses the Express middleware `cors` for handling cross-origin resource sharing.
+- Uses the `express.json` middleware for parsing JSON data.
+- Defines two POST endpoints: `/api/register` and `/api/login` for registering and logging in users, respectively.
+- Defines a GET endpoint `/api/getToken` for generating a JWT token.
+- Listens on port `3001` for incoming requests.
+
+## SignUpForm Component
+
+- React component representing a sign-up form.
+- Uses the `useState` hook to manage form state.
+- Uses the `axios` library to make API requests.
+- Renders a form with input fields for email, password, and role.
+- Includes form validation and error handling.
+- Sends a POST request to the `/api/register` endpoint on form submission to register the user.
+- Stores the JWT token in local storage.
+
+## LoginForm Component
+
+- React component representing a login form.
+- Similar to the SignUpForm component but handles user login.
+- Uses the `useState` hook for form state management.
+- Uses the `axios` library for API requests.
+- Sends a POST request to the `/api/login` endpoint on form submission to log in the user.
+- Stores the JWT token in local storage on successful login.
+- Redirects the user to the `WelcomePage` component.
+
+## MongoDB Database Connection
+
+- Sets up the MongoDB database connection using Mongoose.
+- Imports the `mongoose` module.
+- Establishes a connection to the MongoDB server running on localhost at port `27017`.
+- Exports the database connection object for use in other modules.
+
+## User Model and Schema
+
+- Defines the User schema and creates the User model using Mongoose.
+- Imports the `mongoose` module.
+- Defines a `userSchema` with email, password, and role fields.
+- Creates the User model based on the schema.
+- Exports the User model for use in other modules.
+
+## WelcomePage Component
+
+- React component representing the WelcomePage of the application.
+- Allows the user to upload a file using the HTML file input element.
+- Uses the `useState` hook to manage the file state.
+- Uses the `firebase` and `axios` libraries for file upload and API requests, respectively.
+- Uploads the file to Firebase Storage using the Firebase Storage API on file selection.
+- Sends a POST request to the server using the `axios` library.
+- Includes error and success message handling.
+
+Note: The code assumes the presence of certain dependencies, such as React, React Router, Express, Mongoose, Firebase, and Axios, which should be installed and configured properly for the code to work as expected.
 
 ## Available Scripts
 
@@ -14,11 +79,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
 ### `npm run build`
 
 Builds the app for production to the `build` folder.\
@@ -28,19 +88,3 @@ The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
