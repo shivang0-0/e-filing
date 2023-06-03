@@ -67,6 +67,9 @@ This README provides an overview of the project and its components.
 
 Note: The code assumes the presence of certain dependencies, such as React, React Router, Express, Mongoose, Firebase, and Axios, which should be installed and configured properly for the code to work as expected.
 
+## Video Demo Link
+https://drive.google.com/file/d/1tcjT9nW4WBNuLAukSKCoCTaZlBmOywIL/view?usp=sharing
+
 ## Available Scripts
 
 In the project directory, you can run:
